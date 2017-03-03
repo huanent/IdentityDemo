@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace IdentityDemo
 {
@@ -29,6 +30,11 @@ namespace IdentityDemo
         {
             // Add framework services.
             services.AddMvc();
+            services.AddDbContext<AppDbContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,8 +42,10 @@ namespace IdentityDemo
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            app.UseIdentity();
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUi(baseRoute: "helper");
         }
     }
 }
