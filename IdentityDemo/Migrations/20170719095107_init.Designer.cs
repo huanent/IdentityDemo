@@ -8,13 +8,13 @@ using IdentityDemo;
 namespace IdentityDemo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20170302095531_MyFirstMigration")]
-    partial class MyFirstMigration
+    [Migration("20170719095107_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
+                .HasAnnotation("ProductVersion", "1.1.2")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>

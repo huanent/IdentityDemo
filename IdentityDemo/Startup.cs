@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace IdentityDemo
 {
@@ -25,19 +27,25 @@ namespace IdentityDemo
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=IdentityDemo;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            });
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+            }).AddEntityFrameworkStores<AppDbContext>();
+
+            services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("api", new Info());
+            });
+
             services.AddMvc();
-            services.AddDbContext<AppDbContext>();
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-            services.AddSwaggerGen();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -45,7 +53,10 @@ namespace IdentityDemo
             app.UseIdentity();
             app.UseMvc();
             app.UseSwagger();
-            app.UseSwaggerUi(baseRoute: "helper");
+            app.UseSwaggerUI(option =>
+            {
+                option.SwaggerEndpoint("/swagger/api/swagger.json", "api");
+            });
         }
     }
 }

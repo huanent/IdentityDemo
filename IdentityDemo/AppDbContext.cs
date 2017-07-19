@@ -7,17 +7,11 @@ using System.Threading.Tasks;
 
 namespace IdentityDemo
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser>
+    public class AppDbContext : IdentityDbContext
     {
-        public AppDbContext()
-            : base()
+        public AppDbContext(DbContextOptions options) : base(options)
         {
-        }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=IdentityDb;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
     }
 }

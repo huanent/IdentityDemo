@@ -5,66 +5,46 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.Security.Claims;
-using IdentityDemo.ViewModel;
+using IdentityDemo.ViewModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace IdentityDemo.Controllers
 {
+
     [Route("api/[controller]")]
     public class UserController : Controller
     {
         UserManager<IdentityUser> _userManager;
-        SignInManager<IdentityUser> _signInManager;
-
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public UserController(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
         }
-
+        // GET: api/values
         [HttpGet]
         public IEnumerable<IdentityUser> Get()
         {
             return _userManager.Users;
         }
 
-        [HttpPost, Route("Register")]
-        public async Task<bool> RegisterAsync([FromBody]RegisterViewModel register)
+        // POST api/values
+        [HttpPost]
+        public void Post([FromBody]AddUserViewModel value)
         {
-            var v = HttpContext;
-            var user = new IdentityUser(register.UserName);
-            user.Email = register.Email;
-            var result = await _userManager.CreateAsync(user, register.Password);
-            return result.Succeeded;
+            var user = new IdentityUser(value.Name);
+            _userManager.CreateAsync(user, value.Password).Wait();
         }
 
-        [HttpPost, Route("Login")]
-        public async Task<bool> LoginAsync([FromBody]LoginViewModel login)
+        // PUT api/values/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody]string value)
         {
-            var user = await _userManager.FindByNameAsync(login.UserName);
-            var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
-            if (result.Succeeded)
-            {
-                await _signInManager.SignInAsync(user, false);
-            }
-            return result.Succeeded;
         }
 
-        [HttpPost, Route("GetChangePasswordToken/{userName}")]
-        public async Task<string> GetChangePasswordTokenAsync(string userName)
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
         {
-            var user = await _userManager.FindByNameAsync(userName);
-            return await _userManager.GeneratePasswordResetTokenAsync(user);
-        }
-
-        [HttpPost, Route("ChangePassword")]
-        public async Task<bool> ChangePasswordAsync([FromBody]ChangePasswordViewModel model)
-        {
-            var user = await _userManager.FindByNameAsync(model.UserName);
-            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
-            return result.Succeeded;
         }
     }
 }
