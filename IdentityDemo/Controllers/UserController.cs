@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using IdentityDemo.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace IdentityDemo.Controllers
 {
@@ -27,8 +26,9 @@ namespace IdentityDemo.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
+
         // GET: api/values
-        [HttpGet,Authorize]
+        [HttpGet, Authorize]
         public IEnumerable<IdentityUser> Get()
         {
             return _userManager.Users;
@@ -45,8 +45,10 @@ namespace IdentityDemo.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(string id)
         {
+            var user = _userManager.FindByIdAsync(id).Result;
+            if (user != null) _userManager.DeleteAsync(user).Wait();
         }
 
         [HttpPost, Route(nameof(Login))]
@@ -55,5 +57,6 @@ namespace IdentityDemo.Controllers
             var signInfo = _signInManager.PasswordSignInAsync(model.Name, model.Password, true, false).Result;
             return signInfo.Succeeded;
         }
+
     }
 }
