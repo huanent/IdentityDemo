@@ -36,7 +36,12 @@ namespace IdentityDemo
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
-            }).AddEntityFrameworkStores<AppDbContext>();
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<AppDbContext>()
+              .AddDefaultTokenProviders();
 
             services.AddSwaggerGen(option =>
             {

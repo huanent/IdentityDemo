@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace IdentityDemo.ViewModels
 {
-    public class AddUserViewModel
+    public class UserViewModel
     {
         public string Name { get; set; }
         public string Password { get; set; }
